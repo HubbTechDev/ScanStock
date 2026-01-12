@@ -30,15 +30,10 @@ export const auth = betterAuth({
   baseURL: env.BACKEND_URL,
   plugins: [expo()],
   trustedOrigins: [
-    "vibecode://", // Expo app scheme (IMPORTANT: Update if you change app.json scheme)
+    "scanstock://", // Expo app scheme (IMPORTANT: Update if you change app.json scheme)
     "http://localhost:3000",
     "http://localhost:8081",
-    "*.vibecodeapp.com",
-    "*.share.sandbox.dev",
-    "*.vibecode.dev",
-    "*.vibecode.run",
     env.BACKEND_URL,
-    // "vibecode://*/*", // Trust all Expo development URLs
   ],
   emailAndPassword: {
     enabled: true,
