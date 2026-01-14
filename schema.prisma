@@ -1,99 +1,96 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "sqlite" // or postgres if you're using it
   url      = env("DATABASE_URL")
 }
 
+enum ProductStatus {
+  IN_STOCK
+  SOLD
+  LOST
+  DONATED
+}
+
+enum ListingPlatform {
+  MERCARI
+  DEPOP
+  EBAY
+  OTHER
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  ENDED
+}
+
+enum MovementType {
+  CREATED
+  MOVED
+  SOLD
+  RETURNED
+}
+
 model User {
-  id            String    @id
-  email         String    @unique
-  name          String?
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-
-  Profile Profile?
-
-  @@map("user")
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
+  id        String   @id @default(cuid())
+  email     String   @unique
+  products  Product[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([token])
-  @@map("session")
 }
 
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@map("account")
-}
-
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-
-  @@map("verification")
-}
-
-model Profile {
-  id     Int    @id @default(autoincrement())
-  handle String @unique
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
-}
-
-model InventoryItem {
-  id            String    @id @default(uuid())
+model Product {
+  id            String   @id @default(cuid())
   name          String
   description   String?
-  imageUrl      String
-  binNumber     String
-  rackNumber    String
-  platform      String
-  status        String    @default("pending") // pending, completed, sold
-  soldAt        DateTime?
-  soldPrice     Float?
-  shipByDate    DateTime?
-  shipperQrCode String?   // URL to the shipper's QR code image
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  cost          Float?
+  expectedPrice Float?
+  status        ProductStatus @default(IN_STOCK)
 
-  @@map("inventory_item")
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id])
+
+  listings  Listing[]
+  movements InventoryMovement[]
+
+  createdAt DateTime @default(now())
+}
+
+model Listing {
+  id        String @id @default(cuid())
+  platform  ListingPlatform
+  status    ListingStatus @default(ACTIVE)
+  price     Float?
+  url       String?
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Location {
+  id    String @id @default(cuid())
+  name  String
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  products Product[]
+}
+
+model InventoryMovement {
+  id        String @id @default(cuid())
+  type      MovementType
+  note      String?
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
 }
