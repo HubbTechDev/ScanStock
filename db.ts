@@ -12,7 +12,7 @@
 //
 // The Prisma schema is located at prisma/schema.prisma
 // After modifying the schema, run: bunx prisma generate
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "./generated/prisma";
 
 const prismaClient = new PrismaClient();
 
