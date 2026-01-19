@@ -1,13 +1,14 @@
 import { expoClient } from "@better-auth/expo/client";
 import { createAuthClient } from "better-auth/react";
 import * as SecureStore from "expo-secure-store";
+import config from "./env";
 
 export const authClient = createAuthClient({
-  baseURL: process.env.EXPO_PUBLIC_VIBECODE_BACKEND_URL as string,
+  baseURL: config.BACKEND_URL,
   plugins: [
     expoClient({
-      scheme: "vibecode",
-      storagePrefix: process.env.EXPO_PUBLIC_VIBECODE_PROJECT_ID as string,
+      scheme: "app",
+      storagePrefix: "auth_prefix",
       storage: SecureStore,
     }),
   ],
