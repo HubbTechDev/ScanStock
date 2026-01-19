@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite" // or postgres if you're using it
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Better Auth Models
+// ============================================
+// Required models for Better Auth authentication
+
+model User {
+  id            String    @id
+  email         String    @unique
+  name          String
+  image         String?   @default("")
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  
+  @@map("user")
+}
+
+model Session {
+  id         String    @id
+  expiresAt  DateTime
+  token      String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  ipAddress  String?
+  userAgent  String?
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  @@map("verification")
+}
+
+// ============================================
+// Application Models
+// ============================================
+
+model InventoryItem {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  imageUrl      String
+  binNumber     String   @default("")
+  rackNumber    String   @default("")
+  platform      String   @default("")
+  status        String   @default("pending")  // pending, completed, sold
+  soldAt        DateTime?
+  soldPrice     Float?
+  shipByDate    DateTime?
+  shipperQrCode String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("inventory_item")
+}
