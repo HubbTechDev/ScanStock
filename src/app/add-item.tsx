@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, Upload, X, Check, Image as ImageIcon, Settings } from 'lucide-react-native';
-import { api, BACKEND_URL } from '@/lib/api';
+import { api, BACKEND_URL } from '@/config/api';
 import { useStorageLocations } from '@/config/storage-locations';
 import { usePlatforms } from '@/config/platforms';
 import { PlatformSelector } from '@/components/PlatformSelector';

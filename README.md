@@ -1,180 +1,181 @@
-# Backend Server — Hono, Prisma, Better Auth (Bun)
+# ScanStock - Inventory Management Mobile App
 
-This backend server powers the Frontend Expo app with a minimal, fast Hono server. It provides authentication via Better Auth, JSON REST endpoints via Hono, and persistence via Prisma+SQLite.
+ScanStock is a mobile inventory management application built with Expo and React Native. It helps users track inventory items with features like barcode scanning, photo capture, platform integration, and shipping management.
 
-## Stack and key decisions
-
-- Runtime: Bun with TypeScript
-- Web framework: Hono 4 with `@hono/node-server`
-  - Global middleware: request logger and permissive CORS
-  - Health probe at `/health`
-- API: Hono routes with Zod validation via `@hono/zod-validator`
-- Auth: Better Auth with Expo plugin
-  - Mounted at `/api/auth/*`
-  - `trustedOrigins` includes the Expo/Vibecode scheme (`vibecode://`) and localhost for development
-  - Email + password enabled by default
-- Database: Prisma 6 with SQLite (file DB)
-  - Schema in `prisma/schema.prisma`
-  - Generated client in `generated/prisma`
-  - Example models: `User`, `Session`, `Account`, `Profile`, `Verification`
-- Validation: Zod for input and optional env validation
-
-## Project layout
+## 🏗️ Project Structure
 
 ```
-backend/
-├── src/
-│   ├── index.ts           # Main server setup (middleware, route mounting, server start)
-│   ├── types.ts           # Shared TypeScript types (AppType for context)
-│   ├── auth.ts            # Better Auth configuration (DB adapter, plugins, origins)
-│   ├── db.ts              # Prisma client instance
-│   ├── env.ts             # Zod schema for environment variables
-│   └── routes/            # Route modules (organized by feature)
-│       ├── sample.ts      # Sample routes (GET/POST examples, auth demo)
-│       └── upload.ts      # Image upload routes (multipart handling)
-├── prisma/
-│   ├── schema.prisma      # Prisma schema (SQLite datasource)
-│   ├── dev.db             # SQLite database file
-│   └── migrations/        # Database migration history
-├── uploads/               # User-uploaded images (served at /uploads/*)
-├── package.json
-└── README.md
+ScanStock/
+├── src/                    # Frontend Expo app
+│   ├── app/               # Expo Router routes (file-based routing)
+│   │   ├── _layout.tsx    # Root layout with tab navigation
+│   │   ├── index.tsx      # Home/Dashboard screen
+│   │   ├── inventory.tsx  # Inventory list screen
+│   │   ├── search.tsx     # Search screen
+│   │   ├── sold.tsx       # Sold items screen
+│   │   ├── ready-to-ship.tsx # Ready to ship screen
+│   │   ├── add-item.tsx   # Add new item screen
+│   │   ├── [id].tsx       # Item detail screen (dynamic route)
+│   │   ├── login.tsx      # Login screen
+│   │   └── *-settings.tsx # Settings screens
+│   ├── components/        # Reusable UI components
+│   ├── lib/              # Utilities and hooks
+│   └── config/           # Configuration files
+│
+├── server/                # Backend server (Hono + Prisma)
+│   ├── src/
+│   │   ├── index.ts      # Server entry point
+│   │   ├── auth.ts       # Better Auth configuration
+│   │   ├── db.ts         # Prisma client
+│   │   └── routes/       # API route handlers
+│   └── prisma/
+│       └── schema.prisma # Database schema
+│
+├── shared/               # Shared code between app and server
+│   └── contracts.ts      # API contracts (Zod schemas)
+│
+├── app.json             # Expo configuration
+├── package.json         # Frontend dependencies
+└── server/package.json  # Backend dependencies
 ```
 
-## Runtime behavior
+## 📱 Features
 
-### Available Endpoints
+- **Inventory Management**: Add, edit, delete, and track inventory items
+- **Photo Capture**: Take photos of items using device camera
+- **Platform Integration**: Support for multiple selling platforms (eBay, Amazon, Etsy, etc.)
+- **Storage Management**: Organize items by bin and rack numbers
+- **Shipping Tracking**: Track ship-by dates and generate shipping QR codes
+- **Search**: Search inventory by name, description, or photo
+- **Authentication**: Secure user authentication with Better Auth
+- **Cross-platform**: Works on iOS, Android, and Web
 
-**Auth endpoints** (`/api/auth/*`)
-- Handled by Better Auth (see their docs for route list and flows)
-- Includes sign-up, sign-in, sign-out, session management, etc.
+## 🚀 Getting Started
 
-**Sample endpoints** (`/api/sample/*`)
-- `GET /api/sample` - Public endpoint, returns `{ message: "Hello, world!" }`
-- `GET /api/sample/protected` - Protected endpoint (requires authentication)
-- `POST /api/sample` - Validates request body, returns `{ message: "pong" }` when value is "ping"
+### Prerequisites
 
-**Upload endpoints** (`/api/upload/*`)
-- `POST /api/upload/image` - Upload an image (multipart/form-data)
-  - Field name: `image`
-  - Allowed types: JPEG, PNG, GIF, WebP
-  - Max size: 10MB
-  - Returns: `{ success: true, url: "/uploads/...", filename: "..." }`
+- [Bun](https://bun.sh/) runtime
+- Expo CLI
+- iOS Simulator (Mac only) or Android Emulator
 
-**Static files** (`/uploads/*`)
-- Serves uploaded images from the `uploads/` directory
+### Installation
 
-**Health check** (`/health`)
-- Returns `{ status: "ok" }` for monitoring and load balancers
-
-### Middleware Stack
-
-1. **Request logger** - Logs all incoming requests with method, path, status, and response time
-2. **CORS** - Enabled for all routes by default (customize in production)
-3. **Auth middleware** - Extracts session from headers and attaches user/session to context
-
-### Logging
-
-The server includes comprehensive logging for debugging and monitoring:
-- 🔧 Server initialization and configuration
-- 🌐 Middleware setup (CORS, auth, etc.)
-- 👤 Authentication events (session found/not found)
-- 📤 Upload process (file validation, saving, errors)
-- 📝 Route access (sample endpoints)
-- 💚 Health checks
-
-All logs use prefixes like `[Upload]`, `[Sample]` for easy filtering.
-
-## Auth configuration
-
-- `src/auth.ts` configures Better Auth with the Prisma adapter and the Expo plugin.
-- `trustedOrigins` includes `vibecode://` for the Vibecode-hosted Expo app. If you change the app scheme in `app.json`, update this list.
-
-## Database
-
-- Default: SQLite file at `prisma/dev.db` via `DATABASE_URL=file:dev.db`
-- Change the datasource in `prisma/schema.prisma` if you switch databases
-- Common workflows:
-  - Edit schema → `bunx prisma generate` → `bunx prisma migrate dev --name <migration-name>`
-
-## How to Add New Routes
-
-This template follows a modular route structure. Here's how to add new endpoints:
-
-### 1. Create a new route file in `src/routes/`
-
-```typescript
-// src/routes/todos.ts
-import { Hono } from "hono";
-import { type AppType } from "../types";
-
-const todosRouter = new Hono<AppType>();
-
-todosRouter.get("/", (c) => {
-  // Access user context if needed
-  const user = c.get("user");
-  
-  console.log("📋 [Todos] Get all todos requested");
-  // Your logic here
-  return c.json({ todos: [] });
-});
-
-todosRouter.post("/", async (c) => {
-  console.log("➕ [Todos] Create new todo requested");
-  // Your logic here
-  return c.json({ success: true });
-});
-
-export { todosRouter };
-```
-
-### 2. Mount the router in `src/index.ts`
-
-```typescript
-import { todosRouter } from "./routes/todos";
-
-// ... in your app setup
-console.log("📋 Mounting todos routes at /api/todos");
-app.route("/api/todos", todosRouter);
-```
-
-### 3. Key Patterns
-
-- **Use `AppType`** for type-safe context access (`c.get("user")`, `c.get("session")`)
-- **Add console logs** with emoji prefixes for visibility (e.g., `[Todos]`)
-- **Validate input** with Zod using `@hono/zod-validator`
-- **Check auth** by verifying `c.get("user")` is not null
-- **Follow naming** convention: `feature.ts` (not `feature.route.ts` or `featureRouter.ts`)
-
-## Scripts
-
-- `bun run dev`: start the backend server in development with hot reload. You don't have to do this since the Vibecode dev backend server will automatically restart the backend server when you make changes to the code.
-- `bunx prisma generate`: generate Prisma client
-- `bunx prisma migrate dev --name <migration-name>`: sync schema to the database and generate a new Prisma client
-- `bun install` also generates the new Prisma client in its postinstall step
-
-## Example: Testing the Upload Endpoint
-
-Using cURL:
+1. Clone the repository:
 ```bash
-curl -X POST http://localhost:3000/api/upload/image \
-  -F "image=@/path/to/your/image.jpg"
+git clone https://github.com/HubbTechDev/ScanStock.git
+cd ScanStock
 ```
 
-Using JavaScript:
-```javascript
-const formData = new FormData();
-formData.append('image', imageFile);
-
-const response = await fetch('http://localhost:3000/api/upload/image', {
-  method: 'POST',
-  body: formData,
-});
-
-const result = await response.json();
-console.log(result.url); // /uploads/abc-123-def.jpg
+2. Install frontend dependencies:
+```bash
+bun install
 ```
 
----
+3. Install backend dependencies:
+```bash
+cd server
+bun install
+cd ..
+```
 
-This backend server is intentionally minimal and production-ready with clear seams for growth. The modular route structure makes it easy to add new features, enforce auth where needed, and evolve the schema with Prisma as your data model changes.
+4. Set up environment variables:
+Create a `.env` file in the `server/` directory:
+```env
+DATABASE_URL="file:./prisma/dev.db"
+BETTER_AUTH_SECRET="your-secret-key-at-least-32-characters-long"
+BACKEND_URL="http://localhost:3000"
+PORT=3000
+```
+
+5. Initialize the database:
+```bash
+cd server
+bunx prisma migrate dev --name init
+cd ..
+```
+
+### Running the App
+
+1. Start the backend server:
+```bash
+cd server
+bun run dev
+```
+
+2. In a new terminal, start the Expo dev server:
+```bash
+bun start
+```
+
+3. Scan the QR code with Expo Go app or press:
+   - `i` for iOS simulator
+   - `a` for Android emulator
+   - `w` for web browser
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Expo SDK 53** - React Native framework
+- **Expo Router** - File-based routing
+- **NativeWind** - Tailwind CSS for React Native
+- **React Query** - Server state management
+- **Zustand** - Client state management
+- **Lucide React Native** - Icons
+- **Better Auth** - Authentication
+- **Expo Camera** - Camera access for photos and barcodes
+
+### Backend
+- **Bun** - JavaScript runtime
+- **Hono** - Web framework
+- **Prisma** - ORM with SQLite
+- **Better Auth** - Authentication
+- **Zod** - Schema validation
+
+## 📝 Scripts
+
+### Frontend (Root)
+- `bun start` - Start Expo development server
+- `bun run android` - Open on Android
+- `bun run ios` - Open on iOS
+- `bun run web` - Open in web browser
+- `bun run typecheck` - Type check TypeScript
+
+### Backend (server/)
+- `bun run dev` - Start backend with hot reload
+- `bun run build` - Build for production
+- `bun run start` - Run production build
+- `bunx prisma studio` - Open Prisma Studio (database GUI)
+- `bunx prisma migrate dev` - Create and apply migration
+
+## 🗄️ Database Schema
+
+The app uses SQLite with Prisma ORM. Main models:
+
+- **User** - User accounts with email authentication
+- **Session** - User sessions
+- **Account** - OAuth accounts
+- **InventoryItem** - Inventory items with:
+  - Basic info (name, description, image)
+  - Location (bin number, rack number)
+  - Platform and status
+  - Pricing and shipping info
+
+## 🔐 Authentication
+
+Authentication is handled by Better Auth with:
+- Email/password sign up and sign in
+- Secure session management
+- Integration with Expo for mobile
+- Cross-domain cookie support
+
+## 📄 License
+
+This project is private and proprietary.
+
+## 🤝 Contributing
+
+This is a private repository. For questions or issues, contact the maintainers.
+
+## 📞 Support
+
+For support, email djhelectricalwork@gmail.com

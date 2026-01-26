@@ -6,7 +6,7 @@
 import { Text, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 
-import { api } from "@/lib/api";
+import { api } from "@/config/api";
 import { type GetSampleResponse } from "@/shared/contracts";
 
 const Test = () => {

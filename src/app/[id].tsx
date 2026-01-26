@@ -9,7 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Notifications from 'expo-notifications';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { api, BACKEND_URL } from '@/lib/api';
+import { api, BACKEND_URL } from '@/config/api';
 import { usePlatforms } from '@/config/platforms';
 import { PlatformSelector } from '@/components/PlatformSelector';
 import type { InventoryItem, UpdateInventoryItemRequest, UploadImageResponse } from '@/shared/contracts';
