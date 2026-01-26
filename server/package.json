@@ -9,7 +9,12 @@
     "start": "NODE_ENV=production bun run dist/index.js",
     "studio": "cloud-studio --port 3001 --hostname 0.0.0.0",
     "postinstall": "prisma generate",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:reset": "prisma migrate reset",
+    "db:seed": "bun run prisma/seed.ts",
+    "db:studio": "prisma studio"
   },
   "devDependencies": {
     "@types/bun": "latest",

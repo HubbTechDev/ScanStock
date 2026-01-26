@@ -54,63 +54,136 @@ ScanStock/
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) runtime
-- Expo CLI
-- iOS Simulator (Mac only) or Android Emulator
+- [Bun](https://bun.sh/) runtime (v1.0.0 or higher)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) (installed automatically with dependencies)
+- iOS Simulator (Mac only) or Android Emulator (optional, for mobile testing)
 
-### Installation
+### Quick Setup (Recommended)
 
-1. Clone the repository:
+We've created an automated setup script that handles everything for you:
+
+```bash
+# Clone the repository
+git clone https://github.com/HubbTechDev/ScanStock.git
+cd ScanStock
+
+# Run the automated setup script
+bun run setup
+```
+
+The setup script will:
+- ✓ Check that Bun is installed
+- ✓ Install all frontend and backend dependencies
+- ✓ Create a `.env` file with a secure random secret
+- ✓ Initialize the SQLite database
+- ✓ Run database migrations
+
+That's it! Skip to [Running the App](#running-the-app) below.
+
+### Manual Setup (Alternative)
+
+If you prefer to set up manually or the automated script doesn't work:
+
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/HubbTechDev/ScanStock.git
 cd ScanStock
 ```
 
-2. Install frontend dependencies:
+2. **Install frontend dependencies:**
 ```bash
 bun install
 ```
 
-3. Install backend dependencies:
+3. **Install backend dependencies:**
 ```bash
 cd server
 bun install
 cd ..
 ```
 
-4. Set up environment variables:
-Create a `.env` file in the `server/` directory:
-```env
-DATABASE_URL="file:./prisma/dev.db"
-BETTER_AUTH_SECRET="your-secret-key-at-least-32-characters-long"
-BACKEND_URL="http://localhost:3000"
-PORT=3000
+4. **Set up environment variables:**
+
+Copy the example file and edit it:
+```bash
+cp server/.env.example server/.env
 ```
 
-5. Initialize the database:
+Then edit `server/.env` and replace the `BETTER_AUTH_SECRET` with a secure random string (at least 32 characters). You can generate one using:
+```bash
+openssl rand -base64 32
+```
+
+5. **Initialize the database:**
 ```bash
 cd server
-bunx prisma migrate dev --name init
+bunx prisma generate
+bunx prisma migrate deploy
 cd ..
 ```
 
 ### Running the App
 
-1. Start the backend server:
+Once setup is complete, you'll need two terminal windows:
+
+**Terminal 1 - Start the backend server:**
 ```bash
 cd server
 bun run dev
 ```
 
-2. In a new terminal, start the Expo dev server:
+The server will start on http://localhost:3000
+
+**Terminal 2 - Start the Expo development server:**
 ```bash
 bun start
 ```
 
-3. Scan the QR code with Expo Go app or press:
-   - `i` for iOS simulator
-   - `a` for Android emulator
-   - `w` for web browser
+Then choose how to run the app:
+- Press `i` for iOS simulator (Mac only)
+- Press `a` for Android emulator
+- Press `w` for web browser
+- Scan the QR code with the [Expo Go](https://expo.dev/client) app on your phone
+
+### Environment Variables
+
+The backend requires the following environment variables (in `server/.env`):
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `PORT` | Server port | `3000` | No |
+| `NODE_ENV` | Environment (development/production) | `development` | No |
+| `DATABASE_URL` | SQLite database path | `file:./prisma/dev.db` | Yes |
+| `BETTER_AUTH_SECRET` | Auth secret (≥32 chars) | - | **Yes** |
+| `BACKEND_URL` | Backend URL for auth | `http://localhost:3000` | Yes |
+
+**Note:** A `.env.example` file is provided in the `server/` directory with all variables pre-configured for local development.
+
+### Troubleshooting
+
+**"Bun is not installed" error:**
+- Install Bun from https://bun.sh
+- Run: `curl -fsSL https://bun.sh/install | bash`
+
+**"BETTER_AUTH_SECRET must be at least 32 characters" error:**
+- Generate a secure secret: `openssl rand -base64 32`
+- Update the `BETTER_AUTH_SECRET` in `server/.env`
+
+**Database errors:**
+- Delete the database and reinitialize:
+  ```bash
+  rm server/prisma/dev.db*
+  cd server
+  bunx prisma migrate deploy
+  ```
+
+**Port already in use:**
+- Change the `PORT` in `server/.env` to a different number (e.g., 3001)
+- Update `BACKEND_URL` to match the new port
+
+**Expo not starting:**
+- Clear the cache: `npx expo start --clear`
+- Delete node_modules and reinstall: `rm -rf node_modules && bun install`
 
 ## 🛠️ Tech Stack
 
@@ -133,6 +206,9 @@ bun start
 
 ## 📝 Scripts
 
+### Setup
+- `bun run setup` - Automated setup script (checks prerequisites, installs dependencies, creates .env, initializes database)
+
 ### Frontend (Root)
 - `bun start` - Start Expo development server
 - `bun run android` - Open on Android
@@ -144,8 +220,19 @@ bun start
 - `bun run dev` - Start backend with hot reload
 - `bun run build` - Build for production
 - `bun run start` - Run production build
+- `bun run typecheck` - Type check TypeScript
+
+### Database Management
+From root directory:
+- `bun run db:migrate` - Create and apply new migration
+- `bun run db:reset` - Reset database (careful: deletes all data!)
+- `bun run db:studio` - Open Prisma Studio (database GUI)
+
+From server directory:
 - `bunx prisma studio` - Open Prisma Studio (database GUI)
 - `bunx prisma migrate dev` - Create and apply migration
+- `bunx prisma migrate deploy` - Apply pending migrations
+- `bunx prisma generate` - Regenerate Prisma client
 
 ## 🗄️ Database Schema
 

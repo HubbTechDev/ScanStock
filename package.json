@@ -4,13 +4,19 @@
   "main": "expo-router/entry",
   "private": true,
   "scripts": {
+    "setup": "node scripts/setup.js",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "server:dev": "cd server && bun run dev",
     "server:build": "cd server && bun run build",
-    "typecheck": "tsc --noEmit"
+    "server:studio": "cd server && bunx prisma studio",
+    "db:migrate": "cd server && bunx prisma migrate dev",
+    "db:reset": "cd server && bunx prisma migrate reset",
+    "db:studio": "cd server && bunx prisma studio",
+    "typecheck": "tsc --noEmit",
+    "dev:all": "concurrently \"bun run server:dev\" \"bun start\""
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
