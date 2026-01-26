@@ -1,33 +1,45 @@
 {
-  "name": "server",
-  "module": "src/index.ts",
-  "type": "module",
+  "name": "scanstock",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=development bun run --hot src/index.ts",
-    "build": "NODE_ENV=production bun build src/index.ts --outdir dist --target bun",
-    "start": "NODE_ENV=production bun run dist/index.js",
-    "studio": "cloud-studio --port 3001 --hostname 0.0.0.0",
-    "postinstall": "prisma generate",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "server:dev": "cd server && bun run dev",
+    "server:build": "cd server && bun run build",
     "typecheck": "tsc --noEmit"
   },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "prisma": "^6.17.1"
-  },
-  "peerDependencies": {
-    "typescript": "5.8.3"
-  },
   "dependencies": {
-    "@better-auth/expo": "^1.4.7",
-    "@hono/node-server": "1.12.0",
-    "@vibecodeapp/proxy": "^2.0.0",
-    "@hono/zod-validator": "0.7.3",
-    "@prisma/adapter-better-sqlite3": "^6.17.1",
-    "@prisma/client": "^6.17.1",
-    "@vibecodeapp/cloud-studio": "^0.1.6",
-    "better-auth": "^1.4.7",
-    "hono": "4.6.0",
-    "zod": "4.1.11"
+    "@expo/vector-icons": "^14.0.0",
+    "@react-navigation/native": "^7.0.0",
+    "@tanstack/react-query": "^5.62.14",
+    "clsx": "^2.1.1",
+    "expo": "~53.0.0",
+    "expo-camera": "~16.0.8",
+    "expo-constants": "~17.0.0",
+    "expo-linking": "~7.0.0",
+    "expo-router": "~4.0.0",
+    "expo-status-bar": "~2.0.0",
+    "lucide-react-native": "^0.469.0",
+    "nativewind": "^4.1.23",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-gesture-handler": "~2.21.2",
+    "react-native-reanimated": "~3.16.6",
+    "react-native-safe-area-context": "5.0.0",
+    "react-native-screens": "~4.4.0",
+    "react-native-svg": "15.9.0",
+    "tailwindcss": "^3.4.17",
+    "zod": "^4.1.11",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@types/react": "~18.3.0",
+    "typescript": "~5.8.3"
   }
 }
