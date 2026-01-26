@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Plus, Trash2, GripVertical, MapPin, Pencil, X, Check } from 'lucide-react-native';
-import { useStorageLocations, type LocationField } from '@/lib/storage-locations';
+import { useStorageLocations, type LocationField } from '@/config/storage-locations';
 
 export default function StorageSettingsScreen() {
   const router = useRouter();

@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DollarSign, TrendingUp, Package, Calendar, Search, CheckCircle } from 'lucide-react-native';
-import { api, BACKEND_URL } from '@/lib/api';
+import { api, BACKEND_URL } from '@/config/api';
 import type { GetInventoryResponse } from '@/shared/contracts';
 
 export default function SoldScreen() {

@@ -1,4 +1,4 @@
-import { authClient } from "./authClient";
+import { authClient } from "@/config/authClient";
 
 // IMPORTANT: Use this hook for global state management of the user session
 // This hook can be used to get the current user session

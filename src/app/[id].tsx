@@ -10,7 +10,7 @@ import * as Notifications from 'expo-notifications';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { api, BACKEND_URL } from '@/lib/api';
-import { usePlatforms } from '@/lib/platforms';
+import { usePlatforms } from '@/config/platforms';
 import { PlatformSelector } from '@/components/PlatformSelector';
 import type { InventoryItem, UpdateInventoryItemRequest, UploadImageResponse } from '@/shared/contracts';
 
