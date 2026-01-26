@@ -161,6 +161,10 @@ The backend requires the following environment variables (in `server/.env`):
 
 ### Troubleshooting
 
+**Check environment configuration:**
+- Run: `bun run check-env` or `node scripts/check-env.js`
+- This will validate all environment variables and show any issues
+
 **"Bun is not installed" error:**
 - Install Bun from https://bun.sh
 - Run: `curl -fsSL https://bun.sh/install | bash`
@@ -208,6 +212,7 @@ The backend requires the following environment variables (in `server/.env`):
 
 ### Setup
 - `bun run setup` - Automated setup script (checks prerequisites, installs dependencies, creates .env, initializes database)
+- `bun run check-env` - Validate environment configuration
 
 ### Frontend (Root)
 - `bun start` - Start Expo development server

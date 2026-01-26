@@ -53,8 +53,8 @@ function exec(command, options = {}) {
 // Check if a command exists
 function commandExists(command) {
   try {
-    exec(`which ${command}`, { silent: true, ignoreError: true });
-    return true;
+    const result = exec(`which ${command}`, { silent: true, ignoreError: true });
+    return result !== null && result.trim() !== '';
   } catch {
     return false;
   }
@@ -70,9 +70,15 @@ function checkBun() {
     log.info('Run: curl -fsSL https://bun.sh/install | bash');
     return false;
   }
-  const version = exec('bun --version', { silent: true }).trim();
-  log.success(`Bun is installed (version ${version})`);
-  return true;
+  try {
+    const version = exec('bun --version', { silent: true, ignoreError: false }).trim();
+    log.success(`Bun is installed (version ${version})`);
+    return true;
+  } catch (error) {
+    log.error('Bun is not installed or not working properly!');
+    log.info('Install Bun from: https://bun.sh');
+    return false;
+  }
 }
 
 // Check if Expo CLI is available

@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "setup": "node scripts/setup.js",
+    "check-env": "node scripts/check-env.js",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
