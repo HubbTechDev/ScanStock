@@ -50,10 +50,16 @@ const formatItem = (item: {
 
 // GET /api/inventory - Get all inventory items with stats
 inventoryRouter.get("/", async (c) => {
-  console.log("📦 [Inventory] Fetching all inventory items");
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
+  console.log(`📦 [Inventory] Fetching all inventory items for user ${user.id}`);
 
   try {
     const items = await db.inventoryItem.findMany({
+      where: { userId: user.id },
       orderBy: { createdAt: "desc" },
     });
 
@@ -78,8 +84,13 @@ inventoryRouter.get("/", async (c) => {
 
 // GET /api/inventory/:id - Get single inventory item
 inventoryRouter.get("/:id", async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
   const { id } = c.req.param();
-  console.log(`📦 [Inventory] Fetching item ${id}`);
+  console.log(`📦 [Inventory] Fetching item ${id} for user ${user.id}`);
 
   try {
     const item = await db.inventoryItem.findUnique({
@@ -89,6 +100,12 @@ inventoryRouter.get("/:id", async (c) => {
     if (!item) {
       console.log(`❌ [Inventory] Item ${id} not found`);
       return c.json({ error: "Item not found" }, 404);
+    }
+    
+    // Verify ownership
+    if (item.userId !== user.id) {
+      console.log(`❌ [Inventory] User ${user.id} not authorized to access item ${id}`);
+      return c.json({ error: "Unauthorized" }, 403);
     }
 
     console.log(`✅ [Inventory] Found item ${id}`);
@@ -101,8 +118,13 @@ inventoryRouter.get("/:id", async (c) => {
 
 // POST /api/inventory - Create new inventory item
 inventoryRouter.post("/", zValidator("json", createInventoryItemSchema), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
   const data = c.req.valid("json");
-  console.log("📦 [Inventory] Creating new item:", data.name);
+  console.log(`📦 [Inventory] Creating new item: ${data.name} for user ${user.id}`);
 
   try {
     const item = await db.inventoryItem.create({
@@ -114,6 +136,7 @@ inventoryRouter.post("/", zValidator("json", createInventoryItemSchema), async (
         rackNumber: data.rackNumber ?? "",
         platform: data.platform ?? "",
         status: data.status ?? "pending",
+        userId: user.id,
       },
     });
 
@@ -127,9 +150,14 @@ inventoryRouter.post("/", zValidator("json", createInventoryItemSchema), async (
 
 // PATCH /api/inventory/:id - Update inventory item
 inventoryRouter.patch("/:id", zValidator("json", updateInventoryItemSchema), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
   const { id } = c.req.param();
   const data = c.req.valid("json");
-  console.log(`📦 [Inventory] Updating item ${id}`);
+  console.log(`📦 [Inventory] Updating item ${id} for user ${user.id}`);
 
   try {
     const existing = await db.inventoryItem.findUnique({
@@ -139,6 +167,12 @@ inventoryRouter.patch("/:id", zValidator("json", updateInventoryItemSchema), asy
     if (!existing) {
       console.log(`❌ [Inventory] Item ${id} not found`);
       return c.json({ error: "Item not found" }, 404);
+    }
+    
+    // Verify ownership
+    if (existing.userId !== user.id) {
+      console.log(`❌ [Inventory] User ${user.id} not authorized to update item ${id}`);
+      return c.json({ error: "Unauthorized" }, 403);
     }
 
     // If status is being changed to "sold", set soldAt
@@ -167,8 +201,13 @@ inventoryRouter.patch("/:id", zValidator("json", updateInventoryItemSchema), asy
 
 // DELETE /api/inventory/:id - Delete inventory item
 inventoryRouter.delete("/:id", async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
   const { id } = c.req.param();
-  console.log(`📦 [Inventory] Deleting item ${id}`);
+  console.log(`📦 [Inventory] Deleting item ${id} for user ${user.id}`);
 
   try {
     const existing = await db.inventoryItem.findUnique({
@@ -178,6 +217,12 @@ inventoryRouter.delete("/:id", async (c) => {
     if (!existing) {
       console.log(`❌ [Inventory] Item ${id} not found`);
       return c.json({ error: "Item not found" }, 404);
+    }
+    
+    // Verify ownership
+    if (existing.userId !== user.id) {
+      console.log(`❌ [Inventory] User ${user.id} not authorized to delete item ${id}`);
+      return c.json({ error: "Unauthorized" }, 403);
     }
 
     await db.inventoryItem.delete({
@@ -197,13 +242,19 @@ inventoryRouter.delete("/:id", async (c) => {
 
 // POST /api/inventory/search - Search inventory items
 inventoryRouter.post("/search", zValidator("json", searchInventoryRequestSchema), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
   const { query, status } = c.req.valid("json");
-  console.log(`📦 [Inventory] Searching items with query: ${query}, status: ${status}`);
+  console.log(`📦 [Inventory] Searching items with query: ${query}, status: ${status} for user ${user.id}`);
 
   try {
     const items = await db.inventoryItem.findMany({
       where: {
         AND: [
+          { userId: user.id },
           status ? { status } : {},
           query
             ? {
@@ -231,14 +282,20 @@ inventoryRouter.post("/search", zValidator("json", searchInventoryRequestSchema)
 
 // POST /api/inventory/search-by-photo - Search inventory by photo
 inventoryRouter.post("/search-by-photo", zValidator("json", searchByPhotoRequestSchema), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  
   const { image, itemIds } = c.req.valid("json");
-  console.log(`📷 [Inventory] Photo search for ${itemIds.length} items`);
+  console.log(`📷 [Inventory] Photo search for ${itemIds.length} items for user ${user.id}`);
 
   try {
-    // Get all items that match the provided IDs
+    // Get all items that match the provided IDs and belong to the user
     const items = await db.inventoryItem.findMany({
       where: {
         id: { in: itemIds },
+        userId: user.id,
       },
     });
 
