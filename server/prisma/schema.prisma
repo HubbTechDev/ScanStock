@@ -1,96 +1,95 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite" // or postgres if you're using it
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum ProductStatus {
-  IN_STOCK
-  SOLD
-  LOST
-  DONATED
-}
-
-enum ListingPlatform {
-  MERCARI
-  DEPOP
-  EBAY
-  OTHER
-}
-
-enum ListingStatus {
-  ACTIVE
-  SOLD
-  ENDED
-}
-
-enum MovementType {
-  CREATED
-  MOVED
-  SOLD
-  RETURNED
-}
-
+// Better Auth models
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  products  Product[]
-  createdAt DateTime @default(now())
-}
-
-model Product {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
   name          String
-  description   String?
-  cost          Float?
-  expectedPrice Float?
-  status        ProductStatus @default(IN_STOCK)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  locationId String?
-  location   Location? @relation(fields: [locationId], references: [id])
-
-  listings  Listing[]
-  movements InventoryMovement[]
-
-  createdAt DateTime @default(now())
+  sessions      Session[]
+  accounts      Account[]
+  
+  inventoryItems InventoryItem[]
 }
 
-model Listing {
-  id        String @id @default(cuid())
-  platform  ListingPlatform
-  status    ListingStatus @default(ACTIVE)
-  price     Float?
-  url       String?
-
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Location {
-  id    String @id @default(cuid())
-  name  String
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  accountId         String
+  providerId        String
+  accessToken       String?
+  refreshToken      String?
+  idToken           String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope             String?
+  password          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  userId String
-  user   User @relation(fields: [userId], references: [id])
-
-  products Product[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model InventoryMovement {
-  id        String @id @default(cuid())
-  type      MovementType
-  note      String?
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
 
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
+// Inventory management models
+enum InventoryStatus {
+  pending
+  completed
+  sold
+}
 
-  createdAt DateTime @default(now())
+model InventoryItem {
+  id             String          @id @default(cuid())
+  name           String
+  description    String?
+  imageUrl       String
+  binNumber      String          @default("")
+  rackNumber     String          @default("")
+  platform       String          @default("")
+  status         InventoryStatus @default(pending)
+  soldAt         DateTime?
+  soldPrice      Float?
+  shipByDate     DateTime?
+  shipperQrCode  String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
 }
