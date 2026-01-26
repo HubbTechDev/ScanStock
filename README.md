@@ -58,6 +58,8 @@ ScanStock/
 - [Expo CLI](https://docs.expo.dev/get-started/installation/) (installed automatically with dependencies)
 - iOS Simulator (Mac only) or Android Emulator (optional, for mobile testing)
 
+> 📚 **Need more help?** See the comprehensive [Setup Guide (SETUP.md)](SETUP.md) for detailed instructions and troubleshooting.
+
 ### Quick Setup (Recommended)
 
 We've created an automated setup script that handles everything for you:
@@ -266,7 +268,13 @@ This project is private and proprietary.
 
 ## 🤝 Contributing
 
-This is a private repository. For questions or issues, contact the maintainers.
+Interested in contributing? Check out our [Contributing Guide (CONTRIBUTING.md)](CONTRIBUTING.md) for:
+- Development workflow
+- Code style guidelines
+- How to submit changes
+- Database migration process
+
+For questions or issues, contact the maintainers.
 
 ## 📞 Support
 
