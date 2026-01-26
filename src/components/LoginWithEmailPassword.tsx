@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
-import { authClient } from "@/lib/authClient";
-import { useSession } from "@/lib/useSession";
+import { authClient } from "@/config/authClient";
+import { useSession } from "@/lib/hooks/useSession";
 
 export default function LoginWithEmailPassword() {
   const [email, setEmail] = useState("");

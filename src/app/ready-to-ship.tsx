@@ -8,7 +8,7 @@ import { Truck, MapPin, Calendar, AlertTriangle, Clock, X, Check, QrCode, Camera
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { api, BACKEND_URL } from '@/lib/api';
+import { api, BACKEND_URL } from '@/config/api';
 import type { GetInventoryResponse, InventoryItem, UpdateInventoryItemRequest, UploadImageResponse } from '@/shared/contracts';
 
 export default function ReadyToShipScreen() {
@@ -185,7 +185,7 @@ export default function ReadyToShipScreen() {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,

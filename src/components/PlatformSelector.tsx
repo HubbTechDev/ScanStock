@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Settings, Check, ShoppingBag, Package, Heart, Shirt, Tag, Users, Sparkles, MessageCircle, Store } from 'lucide-react-native';
-import { usePlatforms, type Platform } from '@/lib/platforms';
+import { usePlatforms, type Platform } from '@/config/platforms';
 import { cn } from '@/lib/cn';
 
 interface PlatformSelectorProps {

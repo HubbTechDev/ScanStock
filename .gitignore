@@ -1,0 +1,51 @@
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+server.log
+expo.log
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+dev.db*
+
+# Images and media (uploaded files)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.zip
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Prisma
+prisma/dev.db*

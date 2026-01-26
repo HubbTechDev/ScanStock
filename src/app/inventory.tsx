@@ -8,7 +8,7 @@ import { Package, Search, Plus, CheckCircle, Calendar, ArrowUp, ArrowDown, Camer
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api, BACKEND_URL } from '@/lib/api';
+import { api, BACKEND_URL } from '@/config/api';
 import type { GetInventoryResponse } from '@/shared/contracts';
 
 type TabType = 'active' | 'sold';
@@ -134,7 +134,7 @@ export default function InventoryScreen() {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.5,
     });
 
