@@ -1,8 +1,8 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
 
-import { authClient } from "@/lib/authClient";
-import { useSession } from "@/lib/useSession";
+import { authClient } from "@/config/authClient";
+import { useSession } from "@/lib/hooks/useSession";
 import { cn } from "@/lib/cn";
 import { useRouter } from "expo-router";
 

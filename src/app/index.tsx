@@ -158,7 +158,7 @@ export default function HomeScreen() {
               </Pressable>
               <Pressable
                 className="flex-1 bg-slate-700 rounded-2xl p-4 flex-row items-center justify-center gap-2 active:opacity-80"
-                onPress={() => router.push('/(tabs)/search')}
+                onPress={() => router.push('/search')}
               >
                 <Search size={20} color="#FFFFFF" />
                 <Text className="text-white font-bold">Find Item</Text>
@@ -180,7 +180,7 @@ export default function HomeScreen() {
                   </View>
                 )}
               </View>
-              <Pressable onPress={() => router.push('/(tabs)/ready-to-ship')}>
+              <Pressable onPress={() => router.push('/ready-to-ship')}>
                 <Text className="text-cyan-400 text-sm font-medium">View All</Text>
               </Pressable>
             </View>

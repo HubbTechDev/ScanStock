@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Plus, Trash2, Pencil, X, Check, ShoppingBag, Package, Heart, Shirt, Tag, Users, Sparkles, MessageCircle, Store, Palette } from 'lucide-react-native';
-import { usePlatforms, type Platform } from '@/lib/platforms';
+import { usePlatforms, type Platform } from '@/config/platforms';
 import { cn } from '@/lib/cn';
 
 const iconOptions = [
