@@ -33,11 +33,18 @@ function validateEnv() {
     return parsed;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("❌ Environment variable validation failed:");
+      console.error("\n❌ Environment variable validation failed:");
+      console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       error.issues.forEach((err: any) => {
         console.error(`  - ${err.path.join(".")}: ${err.message}`);
       });
-      console.error("\nPlease check your .env file and ensure all required variables are set.");
+      console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.error("\n🔍 Troubleshooting steps:");
+      console.error("  1. Check that server/.env file exists");
+      console.error("  2. Copy server/.env.example to server/.env if missing");
+      console.error("  3. Generate BETTER_AUTH_SECRET with: openssl rand -base64 32");
+      console.error("  4. Ensure all required variables are set in server/.env");
+      console.error("\n📖 See README.md for detailed setup instructions\n");
       process.exit(1);
     }
     throw error;
